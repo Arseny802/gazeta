@@ -1,5 +1,6 @@
 #pragma once
 // Standard libraries
+#include <algorithm>
 #include <vector>
 #include <string>
 
