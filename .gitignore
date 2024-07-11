@@ -35,3 +35,5 @@
 .vscode
 bin
 cmake_build
+CMakeLists.txt.user
+CMakeUserPresets.json
