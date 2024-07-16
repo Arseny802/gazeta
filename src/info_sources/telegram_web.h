@@ -1,12 +1,13 @@
 #pragma once
 #include "article.h"
-#include <vector>
 #include <string>
+#include <vector>
+
 
 namespace gazeta::info_sources {
 class telegram_http {
-  public:
-std::vector<article> parse_doc(const std::string &httpdoc);
+public:
+  std::vector<article> parse_doc(const std::string &httpdoc);
 };
 
-}  // namespace gazeta::info_sources
+} // namespace gazeta::info_sources

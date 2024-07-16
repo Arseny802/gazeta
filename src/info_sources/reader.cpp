@@ -1,11 +1,13 @@
-#include "pch.h"
 #include "reader.h"
+#include "pch.h"
+
 
 #include "curl/curl.h"
 
 namespace gazeta::info_sources {
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
-  ((std::string *) userp)->append((char *) contents, size * nmemb);
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
+                            void *userp) {
+  ((std::string *)userp)->append((char *)contents, size * nmemb);
   return size * nmemb;
 }
 
@@ -43,16 +45,16 @@ std::string reader::read_source(source &src) {
   return result;
 }
 
-
 #ifdef BOOST_FOUND
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/beast.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/connect.hpp>
-#include <boost/asio/ssl.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/beast.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
 
 int boost_test() {
   AUTOLOG
@@ -62,17 +64,17 @@ int boost_test() {
   const std::string port = "443";
 
   // I/O контекст, необходимый для всех I/O операций
-  //boost::asio::io_context ioc;
+  // boost::asio::io_context ioc;
   // Resolver для определения endpoint'ов
-  //boost::asio::ip::tcp::resolver resolver(ioc);
+  // boost::asio::ip::tcp::resolver resolver(ioc);
   // Tcp сокет, использующейся для соединения
-  //boost::asio::ip::tcp::socket socket(ioc);
+  // boost::asio::ip::tcp::socket socket(ioc);
   // Резолвим адрес и устанавливаем соединение
-  //boost::asio::connect(socket, resolver.resolve(host, "80"));
-
+  // boost::asio::connect(socket, resolver.resolve(host, "80"));
 
   boost::asio::io_service svc;
-  boost::asio::ssl::context ctx(boost::asio::ssl::context::method::sslv23_client);
+  boost::asio::ssl::context ctx(
+      boost::asio::ssl::context::method::sslv23_client);
   boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket(svc, ctx);
 
   boost::asio::ip::tcp::resolver resolver(svc);
@@ -94,29 +96,29 @@ int boost_test() {
     boost::beast::http::response<boost::beast::http::dynamic_body> res;
     boost::beast::http::read(socket, buffer, res);
 
-    boost::beast::http::response_parser<boost::beast::http::dynamic_body> response_parser;
+    boost::beast::http::response_parser<boost::beast::http::dynamic_body>
+        response_parser;
 
-    //std::cout << res << std::endl;
-    //hare::info(res.body().cdata());
+    // std::cout << res << std::endl;
+    // hare::info(res.body().cdata());
 
-    //auto data = res.body().data();
-    //res.find("main");
+    // auto data = res.body().data();
+    // res.find("main");
 
     try {
       std::stringstream stream(buffers_to_string(res.body().data()).data());
       boost::property_tree::ptree propertyTree;
       boost::property_tree::read_xml(stream, propertyTree);
-    }
-    catch (std::exception ex) {
+    } catch (std::exception ex) {
       hare::error(ex.what());
     }
   }
-  //socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-  //socket.shutdown();
+  // socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+  // socket.shutdown();
 
   return 0;
 }
 
 #endif
 
-}  // namespace gazeta::info_sources
+} // namespace gazeta::info_sources

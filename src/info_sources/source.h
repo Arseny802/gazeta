@@ -5,4 +5,4 @@ namespace gazeta::info_sources {
 struct source {
   std::string url;
 };
-}  // namespace gazeta::info_sources
+} // namespace gazeta::info_sources

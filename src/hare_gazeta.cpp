@@ -1,5 +1,5 @@
-#include "pch.h"
 #include "hare/config_custom.h"
+#include "pch.h"
 
 namespace gazeta {
 namespace {
@@ -20,13 +20,9 @@ void initialize_logging_client() {
   common_logger_name = config->get_logger_name();
   hare::register_logger(std::move(config));
 }
-}
+} // namespace
 
-void initialize_logging() {
-  initialize_logging_client();
-}
+void initialize_logging() { initialize_logging_client(); }
 
-hare::hlogger_ptr log() {
-  return hare::get_logger(common_logger_name);
-}
+hare::hlogger_ptr log() { return hare::get_logger(common_logger_name); }
 } // namespace gazeta

@@ -1,8 +1,9 @@
 #pragma once
 // Standard libraries
 #include <algorithm>
-#include <vector>
 #include <string>
+#include <vector>
+
 
 // Custom libraries
 #include "hare/hare.hpp"

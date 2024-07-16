@@ -4,8 +4,8 @@
 
 namespace gazeta::info_sources {
 class reader {
-  public:
+public:
   std::string read_source(source &src);
 };
 
-}  // namespace gazeta::info_sources
+} // namespace gazeta::info_sources
