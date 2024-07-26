@@ -4,7 +4,7 @@
 
 #include "curl/curl.h"
 
-namespace gazeta::info_sources {
+namespace gazeta::info_controller::info_sources {
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
                             void *userp) {
   ((std::string *)userp)->append((char *)contents, size * nmemb);
@@ -121,4 +121,4 @@ int boost_test() {
 
 #endif
 
-} // namespace gazeta::info_sources
+} // namespace gazeta::info_controller::info_sources

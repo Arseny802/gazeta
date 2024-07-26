@@ -1,9 +1,8 @@
-#pragma once
-#include "article.h"
+#include "info_controller/article.h"
 #include <fmt/format.h>
 #include <string>
 
-namespace gazeta::info_sources {
+namespace gazeta::info_controller {
 bool article::is_reply() const noexcept { return !reply_to.empty(); }
 
 std::string article::format() const noexcept {
@@ -34,4 +33,4 @@ std::string article::format() const noexcept {
   return fmt::format("{0}{1}, {2}message: '{3}'{4}", reply_main_info, base, dt,
                      text, images_links);
 }
-} // namespace gazeta::info_sources
+} // namespace gazeta::info_controller

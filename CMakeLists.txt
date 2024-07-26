@@ -1,64 +1,75 @@
 cmake_minimum_required(VERSION 3.30)
 project(gazeta VERSION 0.0.1 LANGUAGES CXX)
+set(VENDOR "Arseny802")
 
-set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/bin")
+message(STATUS "-- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
+message(STATUS "BUILD_TOOL_TYPE_NAME: ${BUILD_TOOL_TYPE_NAME}")
+set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/bin/${BUILD_TOOL_TYPE_NAME}")
 
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    CACHE PATH "Single Directory for all")
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    CACHE PATH "Single Directory for all")
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    CACHE PATH "Single Directory for all")
+SET(BUILD_ARCHITECTURE "NOT_DEFINED")
+if(${BUILD_TOOL_TYPE_NAME} MATCHES "^.*x86.*$")
+    message(STATUS "Detected x86 architecture")
+    SET(BUILD_ARCHITECTURE "x86")
+elseif(${BUILD_TOOL_TYPE_NAME} MATCHES "^.*x64.*$")
+    message(STATUS "Detected x64 architecture")
+    SET(BUILD_ARCHITECTURE "x64")
+endif()
 
-set(CMAKE_CXX_STANDARD 20)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} CACHE PATH "Single Directory for all")
 
-find_package(libxml2 CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_package(OpenSSL CONFIG REQUIRED)
-find_package(ZLIB CONFIG REQUIRED)
-find_package(CURL CONFIG REQUIRED)
+cmake_policy(SET CMP0048 NEW)  # manages VERSION variables
+cmake_policy(SET CMP0091 NEW)  # allows select the MSVC runtime library (MT, MD, etc)
 
-add_subdirectory(dependencies/hare)
-
-add_executable(gazeta
-    src/info_sources/article.cpp
-    src/info_sources/reader.cpp
-    src/info_sources/telegram_web.cpp
-    src/hare_gazeta.cpp
-    src/main.cpp
-    src/pch.h
-    src/pch.cpp)
-
-target_precompile_headers(${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    hare
-    LibXml2::LibXml2
-    fmt::fmt
-    openssl::openssl
-    OpenSSL::Crypto
-    ZLIB::ZLIB
-    CURL::libcurl)
-
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src")
-
-if (WIN32) # building on windows
-    ADD_DEFINITIONS("/EHsc")
+# Set default compile flags for GCC
+if (CMAKE_COMPILER_IS_GNUCXX)
+    message(STATUS "GCC detected, adding compile flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fPIC")
+    set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
+    set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
+    set(CMAKE_CXX_COMPILER_WORKS 1)
+    #add_compile_options("-lstdc++11")
 elseif (MSVC) # building on visual c++
+    message(STATUS "MSVC detected, adding compile flags")
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     ADD_DEFINITIONS("/EHsc")
-elseif (UNIX) # building on unix (mac, linux)
-endif (WIN32)
+endif (CMAKE_COMPILER_IS_GNUCXX)
 
-#add_subdirectory(tests)
+
+add_subdirectory(dependencies/hare)
+add_subdirectory(info_controller)
+add_subdirectory(gui/gtk)
+add_subdirectory(gui/qt)
+
+#if (EXISTS "${CMAKE_BINARY_DIR}/debug_win_gcc_x64")
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E make_directory
+#        "${CMAKE_BINARY_DIR}/debug/")
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy
+#        "${CMAKE_BINARY_DIR}/debug_win_gcc_x64/" "${CMAKE_BINARY_DIR}/debug/")
+#endif ()
+#if (EXISTS "${CMAKE_BINARY_DIR}/release_win_gcc_x64")
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E make_directory
+#        "${CMAKE_BINARY_DIR}/release/")
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy
+#        "${CMAKE_BINARY_DIR}/release_win_gcc_x64/" "${CMAKE_BINARY_DIR}/release/")
+#endif ()
+#
+#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#    "${CMAKE_BINARY_DIR}/debug_win_gcc_x64" "${CMAKE_BINARY_DIR}/../debug/")
+#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#    "${CMAKE_BINARY_DIR}/release_win_gcc_x64" "${CMAKE_BINARY_DIR}/../release/")

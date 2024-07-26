@@ -3,7 +3,7 @@
 #include <string>
 
 
-namespace gazeta::info_sources {
+namespace gazeta::info_controller {
 struct article {
   size_t id = 0;
   std::string text;
@@ -25,4 +25,4 @@ struct article {
   bool is_reply() const noexcept;
   std::string format() const noexcept;
 };
-} // namespace gazeta::info_sources
+} // namespace gazeta::info_controller

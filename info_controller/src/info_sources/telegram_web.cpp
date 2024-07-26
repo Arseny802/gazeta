@@ -6,7 +6,7 @@
 #include <libxml2/libxml/HTMLtree.h>
 #include <libxml2/libxml/xpath.h>
 
-namespace gazeta::info_sources {
+namespace gazeta::info_controller::info_sources {
 
 bool parse_element_message_time(article &new_article,
                                 xmlXPathContextPtr context) {
@@ -190,4 +190,4 @@ std::vector<article> telegram_http::parse_doc(const std::string &httpdoc) {
   xmlFreeDoc(doc);
   return result;
 }
-} // namespace gazeta::info_sources
+} // namespace gazeta::info_controller::info_sources
