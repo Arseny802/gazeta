@@ -1,9 +1,10 @@
 #pragma once
 
-namespace gazeta {
-void initialize_logging();
-hare::hlogger_ptr log();
-} // namespace gazeta
+namespace gazeta::info_controller
+{
+  void initialize_logging();
+  hare::hlogger_ptr log();
+} // namespace gazeta::info_controller
 
 #define GAZETA_PROJECT_NAME "gazeta"
 #define GAZETA_MODULE_NAME "info_controller"

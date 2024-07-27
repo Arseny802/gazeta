@@ -1,11 +1,12 @@
-#include "info_controller/info_controller.h"
 #include "pch.h"
+#include "info_controller/info_controller.h"
 
-int main() {
+int main()
+{
   using namespace gazeta::info_controller;
   example::initialize_logging();
-  AUTOLOG
-  
+  AUTOLOG;
+
   info_controller controller;
   auto result = controller.get_n_articles(controller_types::ria, 100);
 

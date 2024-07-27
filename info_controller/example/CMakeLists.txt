@@ -12,20 +12,4 @@ add_executable(${PROJECT_NAME}
 target_precompile_headers(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    gazeta.info_controller
-    hare
-    LibXml2::LibXml2
-    fmt::fmt
-    openssl::openssl
-    OpenSSL::Crypto
-    ZLIB::ZLIB
-    CURL::libcurl)
-
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_link_libraries(${PROJECT_NAME} PRIVATE gazeta.info_controller)

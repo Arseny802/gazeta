@@ -24,7 +24,7 @@ add_library(${PROJECT_NAME} STATIC
 target_precompile_headers(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
     hare
     LibXml2::LibXml2
     fmt::fmt
