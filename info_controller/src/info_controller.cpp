@@ -1,5 +1,5 @@
 #include "info_controller/info_controller.h"
-#include "controllers/controller_ria.h"
+#include "controllers/fabric.h"
 
 namespace gazeta::info_controller
 {
@@ -8,14 +8,22 @@ namespace gazeta::info_controller
 
   std::vector<article> info_controller::get_n_articles(controller_types ctrl_type, int to_read)
   {
-    controllers::controller_ria ria;
-    auto res = ria.get_n_articles(to_read);
-    for (auto &art : ria.get_n_articles(to_read))
+    const auto controller = controllers::fabric::create(ctrl_type);
+    if (!controller)
     {
-      if (art.is_supported)
-        hare::info(art.format());
+      log()->error("Can't create controller");
+      throw std::runtime_error(fmt::format(
+          "Unsupported controller {0}",
+          static_cast<int>(ctrl_type)));
     }
 
-    return res;
+    auto result = controller->get_n_articles(to_read);
+    for (auto &art : result)
+    {
+      if (art.is_supported)
+        log()->info(art.format());
+    }
+
+    return result;
   }
 } // namespace gazeta::info_controller

@@ -1,7 +1,8 @@
-#include "hare/config_custom.h"
 #include "pch.h"
+#include "hare/config_custom.h"
+#include "info_controller/hare_gazeta_ic.h"
 
-namespace gazeta::info_controller
+namespace gazeta::gui
 {
   namespace
   {
@@ -25,7 +26,12 @@ namespace gazeta::info_controller
     }
   } // namespace
 
-  void initialize_logging() { initialize_logging_client(); }
+  void initialize_logging()
+  {
+    initialize_logging_client();
+    info_controller::initialize_logging();
+    hare::set_default_logger(common_logger_name);
+  }
 
   hare::hlogger_ptr log() { return hare::get_logger(common_logger_name); }
-} // namespace gazeta::info_controller
+} // namespace gazeta::gui

@@ -37,3 +37,4 @@ bin
 cmake_build
 CMakeLists.txt.user
 CMakeUserPresets.json
+CMakePresets.json

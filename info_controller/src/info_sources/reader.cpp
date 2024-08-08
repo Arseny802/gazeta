@@ -14,7 +14,7 @@ namespace gazeta::info_controller::info_sources
 
   std::string reader::read_source(source &src)
   {
-    AUTOLOG;
+    AUTOLOG_IC;
     std::string result;
 
     try
@@ -42,11 +42,11 @@ namespace gazeta::info_controller::info_sources
     }
     catch (std::exception &exception)
     {
-      hare::error("Error occurred: {}", exception.what());
+      log()->error("Error occurred: {}", exception.what());
     }
     catch (...)
     {
-      hare::error("Error occurred");
+      log()->error("Error occurred");
     }
 
     return result;
@@ -64,7 +64,7 @@ namespace gazeta::info_controller::info_sources
 
   int boost_test()
   {
-    AUTOLOG;
+    AUTOLOG_IC;
 
     const std::string host = "t.me";
     const std::string target = "/s/rian_ru/";
@@ -107,7 +107,7 @@ namespace gazeta::info_controller::info_sources
           response_parser;
 
       // std::cout << res << std::endl;
-      // hare::info(res.body().cdata());
+      // log()->info(res.body().cdata());
 
       // auto data = res.body().data();
       // res.find("main");
@@ -120,7 +120,7 @@ namespace gazeta::info_controller::info_sources
       }
       catch (std::exception ex)
       {
-        hare::error(ex.what());
+        log()->error(ex.what());
       }
     }
     // socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);

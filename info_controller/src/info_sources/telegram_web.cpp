@@ -28,7 +28,7 @@ namespace gazeta::info_controller::info_sources
         !element_message_time_set->nodesetval ||
         !element_message_time_set->nodesetval->nodeTab)
     {
-      hare::warn("element_message_time not exists!");
+      log()->warn("element_message_time not exists!");
       return false;
     }
     xmlNodePtr element_message_time = element_message_time_set->nodesetval->nodeTab[0];
@@ -53,7 +53,7 @@ namespace gazeta::info_controller::info_sources
         !element_message_link_set->nodesetval ||
         !element_message_link_set->nodesetval->nodeTab)
     {
-      hare::warn("element_message_link not exists!");
+      log()->warn("element_message_link not exists!");
       return false;
     }
     xmlNodePtr element_message_link = element_message_link_set->nodesetval->nodeTab[0];
@@ -86,7 +86,7 @@ namespace gazeta::info_controller::info_sources
           !element_message_text_set->nodesetval ||
           !element_message_text_set->nodesetval->nodeNr)
       {
-        hare::warn("element_message_text not exists!");
+        log()->warn("element_message_text not exists!");
         return false;
       }
     }
@@ -131,22 +131,22 @@ namespace gazeta::info_controller::info_sources
                                    xmlXPathContextPtr context)
   {
     xmlXPathObjectPtr element_message_video_set = xmlXPathEvalExpression(
-        (xmlChar *)".//a[contains(@class, 'tgme_widget_message_date')]",
+        (xmlChar *)".//a[contains(@class, 'tgme_widget_message_video_player')]",
         context);
     if (!element_message_video_set ||
         !element_message_video_set->nodesetval ||
         !element_message_video_set->nodesetval->nodeTab)
     {
-      hare::debug("element_message_video not exists!");
+      log()->debug("element_message_video not exists!");
       return false;
     }
     xmlNodePtr element_message_video = element_message_video_set->nodesetval->nodeTab[0];
 
-    article::image_t image;
+    // article::image_t image;
 
-    image.url = std::string(reinterpret_cast<char *>(
-        xmlGetProp(element_message_video, (xmlChar *)"style")));
-    new_article.images.push_back(image);
+    // image.url = std::string(reinterpret_cast<char *>(
+    //     xmlGetProp(element_message_video, (xmlChar *)"style")));
+    // new_article.images.push_back(image);
     return true;
   }
 
@@ -161,7 +161,7 @@ namespace gazeta::info_controller::info_sources
         !widget_message_reply_set->nodesetval ||
         !widget_message_reply_set->nodesetval->nodeNr)
     {
-      hare::debug("widget_message_reply not exists!");
+      log()->debug("widget_message_reply not exists!");
       return false;
     }
 
@@ -191,16 +191,34 @@ namespace gazeta::info_controller::info_sources
     return true;
   }
 
+  std::string ReplaceAll(std::string str, const std::string &from, const std::string &to)
+  {
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+      str.replace(start_pos, from.length(), to);
+      start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
+  }
+
   std::vector<article> telegram_http::parse_doc(const std::string &httpdoc)
   {
-    AUTOLOG;
+    AUTOLOG_IC;
 
-    htmlDocPtr doc = htmlReadMemory(httpdoc.c_str(), httpdoc.size(), nullptr, "UTF-8", 0);
+    std::string prepared_httpdoc = ReplaceAll(httpdoc, "<br>", "/n");
+
+    htmlDocPtr doc = htmlReadMemory(
+      prepared_httpdoc.c_str(), 
+      prepared_httpdoc.size(), 
+      nullptr, 
+      "UTF-8", 
+      0);
     xmlXPathContextPtr context = xmlXPathNewContext(doc);
     xmlXPathObjectPtr tgme_widget_message_html_elements;
     if (!message_widgets_exists(context, tgme_widget_message_html_elements))
     {
-      hare::warn("tgme_widget_message_html_elements not exists!");
+      log()->warn("tgme_widget_message_html_elements not exists!");
       xmlXPathFreeContext(context);
       xmlFreeDoc(doc);
       return {};

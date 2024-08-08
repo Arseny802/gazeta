@@ -13,11 +13,12 @@ find_package(CURL CONFIG REQUIRED)
 add_library(${PROJECT_NAME} STATIC
     src/controllers/base_controller.cpp
     src/controllers/controller_ria.cpp
+    src/controllers/fabric.cpp
     src/info_sources/reader.cpp
     src/info_sources/telegram_web.cpp
     src/article.cpp
     src/info_controller.cpp
-    src/hare_gazeta.cpp
+    src/hare_gazeta_ic.cpp
     src/pch.h
     src/pch.cpp)
 

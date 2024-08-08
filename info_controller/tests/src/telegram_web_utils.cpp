@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "pch_tests.h"
 #include "telegram_web_utils.h"
 #include "telegram_web.cpp"
 #include <sstream>

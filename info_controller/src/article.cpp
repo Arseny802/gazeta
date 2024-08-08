@@ -6,6 +6,17 @@ namespace gazeta::info_controller
 {
   bool article::is_reply() const noexcept { return !reply_to.empty(); }
 
+  /**
+   * Returns a formatted string representation of the article.
+   *
+   * The format includes the article's base name, ID if available, link if provided,
+   * datetime and time information, main reply information, message text, and
+   * image links. If this article is a reply to another article, the main reply
+   * information includes the formatted string representation of each replied-to
+   * article.
+   *
+   * @return A formatted string representing the article.
+   */
   std::string article::format() const noexcept
   {
     std::string base = "Article";

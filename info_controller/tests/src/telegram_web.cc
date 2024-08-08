@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "pch_tests.h"
 #include "telegram_web_utils.h"
 
 namespace gazeta::info_controller

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "pch_tests.h"
 #include "../src/info_sources/reader.h"
 
 //TODO: implement tests for curl reader

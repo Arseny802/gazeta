@@ -7,4 +7,6 @@ namespace gazeta::info_controller
     undefined = 0,
     ria,
   };
+
+  constexpr size_t controller_types_size = 2;
 } // namespace gazeta::info_controller

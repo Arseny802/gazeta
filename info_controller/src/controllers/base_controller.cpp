@@ -11,7 +11,7 @@ namespace gazeta::info_controller::controllers
 
   std::vector<article> base_controller::read_n_articles_from_tweb(const source &src, int to_read)
   {
-    AUTOLOG;
+    AUTOLOG_IC;
 
     std::vector<article> result;
     source src_parsing = src;
@@ -19,7 +19,7 @@ namespace gazeta::info_controller::controllers
     info_sources::reader reader;
     do
     {
-      hare::debug("Gettings articles by URL '{0}'.", src.url);
+      log()->debug("Gettings articles by URL '{0}'.", src.url);
       std::vector<article> articles =
           parser.parse_doc(reader.read_source(src_parsing));
       if (articles.empty())
@@ -33,8 +33,7 @@ namespace gazeta::info_controller::controllers
     } while (to_read > 0);
 
     std::sort(result.begin(), result.end(),
-              [](const article &a1,
-                 const article &a2)
+              [](const article &a1, const article &a2)
               { return a1.id < a2.id; });
 
     return result;

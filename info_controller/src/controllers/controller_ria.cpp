@@ -12,7 +12,7 @@ namespace gazeta::info_controller::controllers
 
   std::vector<article> controller_ria::get_n_articles(int to_read)
   {
-    AUTOLOG;
+    AUTOLOG_IC;
 
     source src;
     src.url = "https://t.me/s/rian_ru/";
