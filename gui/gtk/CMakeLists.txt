@@ -14,7 +14,6 @@ find_package(PkgConfig)
 pkg_check_modules(GTKMM gtkmm-4.0)
 
 add_executable(${PROJECT_NAME}
-    src/infobook/article_object.cpp
     src/infobook/infobook_object.cpp
     src/infobook/infobook_page_object.cpp
     src/main_window.cpp

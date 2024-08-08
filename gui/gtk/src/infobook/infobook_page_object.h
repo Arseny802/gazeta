@@ -1,8 +1,8 @@
 #pragma once
 #include <gtkmm.h>
 
-#include "article_object.h"
 #include "info_controller/controller_types.h"
+#include "info_controller/info_controller.h"
 
 namespace gazeta::gui
 {
@@ -30,6 +30,7 @@ namespace gazeta::gui
 
   private:
     const info_controller::controller_types controller_type_;
+    info_controller::info_controller controller_;
 
     PageColumns m_columns;
     Gtk::TreeView m_TreeView;

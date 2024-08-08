@@ -15,9 +15,6 @@ namespace gazeta::gui
 
     for (auto &item : info_controller_map)
     {
-      // InfobookPageObject aaa(item.second);
-      // info_controller_page_map.emplace(item.first, aaa);
-      // info_controller_pages[item.first] = aaa;
       int page_id = append_page(info_controller_pages[int(item.second)], item.first);
       info_controller_page_id_map[page_id] = item.first;
     }

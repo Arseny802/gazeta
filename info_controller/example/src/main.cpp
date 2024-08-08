@@ -7,8 +7,8 @@ int main()
   example::initialize_logging();
   AUTOLOG;
 
-  info_controller controller;
-  auto result = controller.get_n_articles(controller_types::ria, 100);
+  info_controller controller(controller_types::ria);
+  auto result = controller.get_n_articles(100);
 
   return 0;
 }

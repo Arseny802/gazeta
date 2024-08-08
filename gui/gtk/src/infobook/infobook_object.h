@@ -1,7 +1,6 @@
 #pragma once
 #include <gtkmm.h>
 
-#include "article_object.h"
 #include "infobook_page_object.h"
 #include "info_controller/controller_types.h"
 
