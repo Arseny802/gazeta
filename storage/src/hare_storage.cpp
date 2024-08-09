@@ -1,7 +1,6 @@
 #include "pch.h"
-#include "hare/config_custom.h"
 
-namespace gazeta::info_controller::example {
+namespace gazeta::storage {
   namespace {
     std::string common_logger_name;
 
@@ -29,4 +28,4 @@ namespace gazeta::info_controller::example {
   hare::hlogger_ptr log() {
     return hare::get_logger(common_logger_name);
   }
-} // namespace gazeta::info_controller::example
+} // namespace gazeta::storage

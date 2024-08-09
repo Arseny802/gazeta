@@ -17,8 +17,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ../src/info_sources
     ../include)
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    gazeta.common
     gazeta.info_controller
-    hare
     GTest::gtest_main
     GTest::gtest
 )

@@ -1,5 +1,5 @@
 [requires]
-qt/5.15.14
+sqlite3/3.46.0
 boost/1.84.0
 libxml2/2.12.7
 pugixml/1.14

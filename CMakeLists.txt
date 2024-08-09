@@ -46,7 +46,10 @@ endif (CMAKE_COMPILER_IS_GNUCXX)
 
 
 add_subdirectory(dependencies/hare)
+add_subdirectory(dependencies/cmrc)
+add_subdirectory(common)
 add_subdirectory(info_controller)
+add_subdirectory(storage)
 add_subdirectory(gui/gtk)
 add_subdirectory(gui/qt)
 

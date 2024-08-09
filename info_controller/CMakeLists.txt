@@ -26,7 +26,7 @@ target_precompile_headers(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    hare
+    gazeta.common
     LibXml2::LibXml2
     fmt::fmt
     openssl::openssl
@@ -42,5 +42,8 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CMAKE_CXX_STANDARD 20)
+    
 add_subdirectory(example)
 add_subdirectory(tests)

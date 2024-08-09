@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.30)
+project(gazeta.storage VERSION 0.0.1 LANGUAGES CXX)
+
+find_package(SQLite3 CONFIG REQUIRED)
+
+file(GLOB SQL_SOURCES "sql/*.sql")
+cmrc_add_resource_library(${PROJECT_NAME}.resources
+  NAMESPACE gazeta::storage::sql_resources
+  WHENCE sql
+  ${SQL_SOURCES}
+  )
+
+add_library(${PROJECT_NAME} STATIC
+  src/db/sqlite/manager.cpp
+  src/db/fabric.cpp
+  src/db/manager_base.cpp
+  src/db_manager.cpp
+  src/hare_storage.cpp
+  src/pch.h
+  src/pch.cpp)
+
+target_precompile_headers(${PROJECT_NAME}
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  gazeta.common
+  ${PROJECT_NAME}.resources
+  SQLite::SQLite3)
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+  PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+set(STORAGE_RESOURCE_FILES
+  sql/create_db.sql)
+  
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  CMAKE_CXX_STANDARD 20
+  #RESOURCE "${STORAGE_RESOURCE_FILES}"
+  )
+
+add_subdirectory(tests)
+add_subdirectory(example)
