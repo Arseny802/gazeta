@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(gazeta.common VERSION 0.0.1 LANGUAGES CXX)
 
 add_library(${PROJECT_NAME} STATIC
+  src/article.cpp
   src/pch.cpp)
 
 target_precompile_headers(${PROJECT_NAME}
@@ -20,3 +21,5 @@ target_include_directories(${PROJECT_NAME}
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CMAKE_CXX_STANDARD 20)
+
+add_subdirectory(tests)

@@ -3,11 +3,11 @@ project(gazeta.storage VERSION 0.0.1 LANGUAGES CXX)
 
 find_package(SQLite3 CONFIG REQUIRED)
 
-file(GLOB SQL_SOURCES "sql/*.sql")
+file(GLOB SQLite_SOURCES "sql/sqlite/*.sql")
 cmrc_add_resource_library(${PROJECT_NAME}.resources
   NAMESPACE gazeta::storage::sql_resources
   WHENCE sql
-  ${SQL_SOURCES}
+  ${SQLite_SOURCES}
   )
 
 add_library(${PROJECT_NAME} STATIC

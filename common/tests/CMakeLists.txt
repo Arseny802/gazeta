@@ -1,29 +1,24 @@
 cmake_minimum_required(VERSION 3.24)
-project(gazeta.info_controller.tests)
+project(gazeta.common.tests)
 
 find_package(GTest REQUIRED)
 
 add_executable(${PROJECT_NAME} 
     src/pch.cpp
-    src/reader.cc
-    src/telegram_web.cc
-    src/telegram_web_utils.cpp
+    src/article.cc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ../src/
-    ../src/controllers
-    ../src/info_sources
     ../include)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     gazeta.common
-    gazeta.info_controller
     GTest::gtest_main
     GTest::gtest
 )
 
 target_precompile_headers(${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../src/pch.h)
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/common/pch.h)
 
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 

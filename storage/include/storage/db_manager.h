@@ -1,5 +1,6 @@
 #include <string>
 
+#include "common/common.hpp"
 #include "types.h"
 
 namespace gazeta::storage {
@@ -15,6 +16,9 @@ public:
     bool connect();
 
     bool create_db();
+
+    std::optional<std::string> get_stored_setting(const std::string& key);
+    bool set_stored_setting(const common::setting& setting);
 
 private:
     const storage_types storage_type_;

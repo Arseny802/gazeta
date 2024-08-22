@@ -1,34 +1,28 @@
-#include "reader.h"
 #include "pch.h"
+#include "reader.h"
 
 #include "curl/curl.h"
 
-namespace gazeta::info_controller::info_sources
-{
-  static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
-                              void *userp)
-  {
-    ((std::string *)userp)->append((char *)contents, size * nmemb);
+namespace gazeta::info_controller::info_sources {
+  static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
   }
 
-  std::string reader::read_source(source &src)
-  {
+  std::string reader::read_source(common::source& src) {
     AUTOLOG_IC;
     std::string result;
 
-    try
-    {
-      CURL *curl;
+    try {
+      CURL* curl;
       CURLcode res;
 
       curl = curl_easy_init();
-      if (curl)
-      {
+      if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, src.url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        struct curl_slist *headers = NULL;
+        struct curl_slist* headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/json");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -39,13 +33,9 @@ namespace gazeta::info_controller::info_sources
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
       }
-    }
-    catch (std::exception &exception)
-    {
+    } catch (std::exception& exception) {
       log()->error("Error occurred: {}", exception.what());
-    }
-    catch (...)
-    {
+    } catch (...) {
       log()->error("Error occurred");
     }
 
@@ -54,16 +44,15 @@ namespace gazeta::info_controller::info_sources
 
 #ifdef BOOST_FOUND
 
-#include <boost/asio.hpp>
-#include <boost/asio/connect.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/beast.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+#  include <boost/asio.hpp>
+#  include <boost/asio/connect.hpp>
+#  include <boost/asio/ip/tcp.hpp>
+#  include <boost/asio/ssl.hpp>
+#  include <boost/beast.hpp>
+#  include <boost/property_tree/ptree.hpp>
+#  include <boost/property_tree/xml_parser.hpp>
 
-  int boost_test()
-  {
+  int boost_test() {
     AUTOLOG_IC;
 
     const std::string host = "t.me";
@@ -80,8 +69,7 @@ namespace gazeta::info_controller::info_sources
     // boost::asio::connect(socket, resolver.resolve(host, "80"));
 
     boost::asio::io_service svc;
-    boost::asio::ssl::context ctx(
-        boost::asio::ssl::context::method::sslv23_client);
+    boost::asio::ssl::context ctx(boost::asio::ssl::context::method::sslv23_client);
     boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket(svc, ctx);
 
     boost::asio::ip::tcp::resolver resolver(svc);
@@ -89,8 +77,7 @@ namespace gazeta::info_controller::info_sources
     boost::asio::connect(socket.lowest_layer(), it);
     socket.handshake(boost::asio::ssl::stream_base::handshake_type::client);
 
-    boost::beast::http::request<boost::beast::http::string_body> req(
-        boost::beast::http::verb::get, target, 11);
+    boost::beast::http::request<boost::beast::http::string_body> req(boost::beast::http::verb::get, target, 11);
 
     req.set(boost::beast::http::field::host, host);
     req.set(boost::beast::http::field::user_agent, BOOST_BEAST_VERSION_STRING);
@@ -103,8 +90,7 @@ namespace gazeta::info_controller::info_sources
       boost::beast::http::response<boost::beast::http::dynamic_body> res;
       boost::beast::http::read(socket, buffer, res);
 
-      boost::beast::http::response_parser<boost::beast::http::dynamic_body>
-          response_parser;
+      boost::beast::http::response_parser<boost::beast::http::dynamic_body> response_parser;
 
       // std::cout << res << std::endl;
       // log()->info(res.body().cdata());
@@ -112,14 +98,11 @@ namespace gazeta::info_controller::info_sources
       // auto data = res.body().data();
       // res.find("main");
 
-      try
-      {
+      try {
         std::stringstream stream(buffers_to_string(res.body().data()).data());
         boost::property_tree::ptree propertyTree;
         boost::property_tree::read_xml(stream, propertyTree);
-      }
-      catch (std::exception ex)
-      {
+      } catch (std::exception ex) {
         log()->error(ex.what());
       }
     }

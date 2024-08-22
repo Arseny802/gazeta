@@ -16,7 +16,6 @@ add_library(${PROJECT_NAME} STATIC
     src/controllers/fabric.cpp
     src/info_sources/reader.cpp
     src/info_sources/telegram_web.cpp
-    src/article.cpp
     src/info_controller.cpp
     src/hare_gazeta_ic.cpp
     src/pch.h

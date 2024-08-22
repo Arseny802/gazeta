@@ -22,5 +22,15 @@ int main() {
     return EXIT_FAILURE;
   }
 
+  dbm.set_stored_setting({"key1", "val1"});
+  dbm.set_stored_setting({"key2", "val2"});
+  dbm.set_stored_setting({"key3", "val3"});
+  dbm.set_stored_setting({"key4", "val4"});
+
+  log()->info("Value by key 'key1': {0}", dbm.get_stored_setting("key1").value());
+  log()->info("Value by key 'key2': {0}", dbm.get_stored_setting("key2").value());
+  log()->info("Value by key 'key3': {0}", dbm.get_stored_setting("key3").value());
+  log()->info("Value by key 'key4': {0}", dbm.get_stored_setting("key4").value());
+
   return EXIT_SUCCESS;
 }
