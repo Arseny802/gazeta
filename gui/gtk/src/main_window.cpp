@@ -3,10 +3,8 @@
 
 #include <gtkmm.h>
 
-namespace gazeta::gui
-{
-  MainWIndow::MainWIndow()
-  {
+namespace gazeta::gui {
+  MainWIndow::MainWIndow() {
     AUTOLOG_GTK;
     set_title("Gazeta");
     set_default_size(2560, 1080);
@@ -19,8 +17,7 @@ namespace gazeta::gui
     widget_map = new GtkWidget();
   }
 
-  MainWIndow::~MainWIndow()
-  {
+  MainWIndow::~MainWIndow() {
     AUTOLOG_GTK;
   }
 

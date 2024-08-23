@@ -6,19 +6,30 @@
 #include <memory>
 #include <vector>
 
-namespace gazeta::info_controller {
-  namespace controllers {
-    class base_controller;
-  } // namespace controllers
+namespace gazeta::storage {
+  class db_manager;
+} // namespace gazeta::storage
 
-  struct info_controller {
+namespace gazeta::info_controller::controllers {
+  class base_controller;
+} // namespace gazeta::info_controller::controllers
+
+namespace gazeta::info_controller {
+  class info_controller final {
+public:
     info_controller(controller_types controller_type);
     ~info_controller();
 
-    std::vector<common::article> get_n_articles(int to_read);
-    std::vector<common::article> get_articles_afer(int to_read);
+    bool available() const noexcept;
 
-    controller_types controller_type;
-    std::shared_ptr<controllers::base_controller> controller_pimpl;
+    std::vector<common::article> get_n_articles(size_t to_read);
+    std::vector<common::article> get_articles_afer(size_t to_read);
+
+private:
+    controller_types controller_type_;
+    std::shared_ptr<controllers::base_controller> controller_pimpl_;
+
+    std::unique_ptr<storage::db_manager> db_manager_pimpl_;
+    const static std::string_view db_name_;
   };
 } // namespace gazeta::info_controller

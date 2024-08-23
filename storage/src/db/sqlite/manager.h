@@ -28,10 +28,10 @@ public:
 
     /// articles (concrete data)
     bool get_article(common::article& article);
-    std::optional<std::vector<common::article>> get_articles();
+    std::optional<std::vector<common::article>> get_articles(size_t limit = 100);
     std::optional<std::vector<common::article>> get_articles(int timestamp_begin);
     std::optional<std::vector<common::article>> get_articles(int timestamp_begin, int timestamp_end);
-    std::optional<std::vector<common::article>> get_articles_by_source(int source_id);
+    std::optional<std::vector<common::article>> get_articles_by_source(int source_id, size_t limit = 100);
     std::optional<std::vector<common::article>> get_articles_by_source(int source_id, int timestamp_begin);
     std::optional<std::vector<common::article>> get_articles_by_source(int source_id,
                                                                        int timestamp_begin,
@@ -40,6 +40,7 @@ public:
     bool set_articles(const std::vector<common::article>& articles);
 
 private:
+    std::string get_db_version();
     bool execute_query(const char* sql_query);
 
     std::optional<std::vector<common::article>> get_article_data(const char* sql_query, sqlite3_stmt* stmt);

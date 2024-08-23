@@ -7,8 +7,8 @@ namespace gazeta::storage {
     void initialize_logging_client() {
       auto config = std::make_unique<hare::config_custom>();
 
-      config->set_project_name(GAZETA_PROJECT_NAME);
-      config->set_module_name(GAZETA_MODULE_NAME);
+      config->set_project_name(GAZETA_STORAGE_PROJECT_NAME);
+      config->set_module_name(GAZETA_STORAGE_MODULE_NAME);
       config->set_hlevel(hare::hlevels::trace);
 
       hare::sinks_info sinks_info;

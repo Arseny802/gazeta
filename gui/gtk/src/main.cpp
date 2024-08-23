@@ -1,8 +1,7 @@
 #include "main_window.h"
 #include <gtkmm/application.h>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
   gazeta::gui::initialize_logging();
   AUTOLOG_GTK;
 #if GTKMM_MAJOR_VERSION == 4

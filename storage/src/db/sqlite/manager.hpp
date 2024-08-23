@@ -16,6 +16,7 @@ namespace gazeta::storage::db::sqlite {
   */
   template<typename TArg>
   void manager::prapare_statement_arg(sqlite3_stmt* stmt, TArg argument, int index) {
+    AUTOLOG_ST
     /* For encoding issues:
 
     SQLITE_API int sqlite3_bind_text(sqlite3_stmt*,int,const char*,int,void(*)(void*));
@@ -58,7 +59,7 @@ namespace gazeta::storage::db::sqlite {
     } else if constexpr (std::is_null_pointer_v<TArg>) {
       sqlite3_bind_null(stmt, index);
     } else {
-      log()->error("Error: Unknown argument type");
+      log()->error("Error: Unknown argument {0} type, value: {1}", index, std::to_string(argument));
       stmt = nullptr;
     }
   }
@@ -70,7 +71,7 @@ namespace gazeta::storage::db::sqlite {
     sqlite3_stmt* stmt = nullptr;
     sqlite3_prepare_v2(db_handler_, sql_query, strlen(sql_query) + 1, &stmt, &tail);
 
-    const auto lambda = [&stmt]<size_t N>(auto& arguments_tuple) {
+    auto lambda = [&stmt]<size_t N>(auto& arguments_tuple) constexpr {
       constexpr size_t argument_count = sizeof...(TArgs);
       if constexpr (argument_count > N) {
         prapare_statement_arg(stmt, std::get<N>(arguments_tuple), N + 1);
@@ -97,10 +98,9 @@ namespace gazeta::storage::db::sqlite {
     lambda.template operator()<16>(arguments_tuple);
 
     const int result_code = sqlite3_step(stmt);
-    const auto ok_codes = {SQLITE_ROW, SQLITE_DONE};
+    constexpr std::array ok_codes = {SQLITE_ROW, SQLITE_DONE};
 
-    if (std::none_of(
-            ok_codes.begin(), ok_codes.end(), [result_code](const int result) { return result == result_code; })) {
+    if (std::find(ok_codes.cbegin(), ok_codes.cend(), result_code) == ok_codes.cend()) {
       std::string keys_format;
       for (size_t i = 0; i < sizeof...(TArgs); ++i) {
         keys_format += "'{" + std::to_string(i + 2) + "}' ";

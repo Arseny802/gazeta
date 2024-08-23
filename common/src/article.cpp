@@ -1,22 +1,11 @@
 #include "common/article.h"
 #include "common/pch.h"
-
+#include <ctime>
 namespace gazeta::common {
   bool article::is_reply() const noexcept {
     return !reply_to.empty();
   }
 
-  /**
-   * Returns a formatted string representation of the article.
-   *
-   * The format includes the article's base name, ID if available, link if provided,
-   * datetime and time information, main reply information, message text, and
-   * image links. If this article is a reply to another article, the main reply
-   * information includes the formatted string representation of each replied-to
-   * article.
-   *
-   * @return A formatted string representing the article.
-   */
   std::string article::format() const noexcept {
     std::string base = "Article";
     if (id > 0) {
@@ -26,9 +15,9 @@ namespace gazeta::common {
       base += " [" + link + "]";
     }
 
-    std::string dt = datetime;
+    std::string dt = get_datetime();
     if (!time.empty()) {
-      dt = fmt::format("DT {0} (friendly '{1}'), ", datetime, time);
+      dt = fmt::format("DT {0} (friendly '{1}'), ", dt, time);
     }
 
     std::string reply_main_info{};
@@ -46,5 +35,28 @@ namespace gazeta::common {
 
   bool article::operator==(const article& other) const noexcept {
     return this->id == other.id && this->source_id == other.source_id;
+  }
+
+  void article::set_datetime(const std::string& datetime) {
+    //"2024-08-23T15:54:39+00:00"
+    std::string format{"%Y-%m-%dT%H:%M:%S"};
+
+    tm tmStruct = {};
+    std::istringstream ss(datetime);
+    ss >> std::get_time(&tmStruct, format.c_str());
+    time_t time_t_format = mktime(&tmStruct);
+    datetime_occurred = std::chrono::system_clock::from_time_t(time_t_format);
+  }
+
+  std::string article::get_datetime() const {
+    constexpr std::string_view dt_format = "%Y-%m-%d %H:%M:%S";
+
+    time_t time = std::chrono::system_clock::to_time_t(datetime_occurred);
+    tm* timeinfo = localtime(&time);
+    char buffer[70];
+    strftime(buffer, sizeof(buffer), dt_format.data(), timeinfo);
+    return buffer;
+
+    return std::format(dt_format, datetime_occurred);
   }
 } // namespace gazeta::common

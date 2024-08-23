@@ -1,7 +1,6 @@
 #pragma once
 
-namespace gazeta::gui
-{
+namespace gazeta::gui {
   void initialize_logging();
   hare::hlogger_ptr log();
 } // namespace gazeta::gui

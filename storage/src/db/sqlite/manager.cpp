@@ -43,12 +43,27 @@ namespace gazeta::storage::db::sqlite {
         sqlite3_free(messaggeError);
       } else {
         log()->info("Database created Successfully!");
+        set_stored_setting({db_version_setting_key.data(), get_db_version()});
         return true;
       }
     } catch (const std::exception& e) {
       log()->error("Error: {0}", e.what());
     }
     return false;
+  }
+
+  std::string manager::get_db_version() {
+    AUTOLOG_ST
+    const char* get_version_sql = "SELECT SQLITE_VERSION();";
+    sqlite3_stmt* stmt = prapare_statement(get_version_sql);
+    if (!stmt || !execute_query(get_version_sql)) {
+      sqlite3_finalize(stmt);
+      return {};
+    }
+
+    std::string version_sqlite = (char*)sqlite3_column_text(stmt, 0);
+    sqlite3_finalize(stmt);
+    return version_sqlite;
   }
 
   bool manager::execute_query(const char* sql_query) {
@@ -75,7 +90,7 @@ namespace gazeta::storage::db::sqlite {
   }
 
   bool manager::get_stored_setting(common::setting& setting) {
-    AUTOLOG
+    AUTOLOG_ST
     const char* sql_query = "SELECT `value` FROM `settings` WHERE `key`=?";
     sqlite3_stmt* stmt = prapare_statement(sql_query, setting.key);
     if (!stmt || !execute_query(sql_query)) {
@@ -90,7 +105,7 @@ namespace gazeta::storage::db::sqlite {
   }
 
   std::optional<std::vector<common::setting>> manager::get_stored_settings() {
-    AUTOLOG
+    AUTOLOG_ST
     const char* sql_query = "SELECT `key`, `value` FROM `settings`";
     sqlite3_stmt* stmt = prapare_statement(sql_query);
     if (!stmt || !execute_query(sql_query)) {
@@ -101,7 +116,7 @@ namespace gazeta::storage::db::sqlite {
     std::vector<common::setting> result;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
       common::setting item;
-      item.key = sqlite3_column_int(stmt, 0);
+      item.key = (char*)sqlite3_column_text(stmt, 0);
       item.value = (char*)sqlite3_column_text(stmt, 1);
       result.emplace_back(item);
     }
@@ -111,8 +126,8 @@ namespace gazeta::storage::db::sqlite {
   }
 
   bool manager::set_stored_setting(const common::setting& setting) {
-    AUTOLOG
-    const char* sql_query = "INSERT INTO `settings`(`key`, `value`) VALUES (?,?)";
+    AUTOLOG_ST
+    const char* sql_query = "INSERT OR REPLACE INTO `settings`(`key`, `value`) VALUES (?,?)";
     sqlite3_stmt* stmt = prapare_statement(sql_query, setting.key, setting.value);
     if (!stmt || !execute_query(sql_query)) {
       sqlite3_finalize(stmt);
@@ -126,8 +141,29 @@ namespace gazeta::storage::db::sqlite {
     return true;
   }
 
+  /// source_types (data reciever types)
+  std::optional<std::vector<common::source_type>> manager::get_source_types() {
+    AUTOLOG_ST
+    const char* sql_query = "SELECT `name` FROM `source_types`";
+    sqlite3_stmt* stmt = prapare_statement(sql_query);
+    if (!stmt || !execute_query(sql_query)) {
+      sqlite3_finalize(stmt);
+      return std::nullopt;
+    }
+
+    std::vector<common::source_type> result;
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+      common::source_type item;
+      item.name = (char*)sqlite3_column_text(stmt, 1);
+      result.emplace_back(item);
+    }
+
+    sqlite3_finalize(stmt);
+    return result;
+  }
+
   bool manager::get_info_source(common::source& info_source) {
-    AUTOLOG
+    AUTOLOG_ST
     const char* sql_query;
     sqlite3_stmt* stmt;
     if (info_source.id > 0) {
@@ -162,7 +198,7 @@ namespace gazeta::storage::db::sqlite {
   }
 
   std::optional<std::vector<common::source>> manager::get_info_sources() {
-    AUTOLOG
+    AUTOLOG_ST
     const char* sql_query =
         "SELECT `id`, `name`, `url`, `source_type_id`, `filter`, `filter_startes_with` FROM `source`";
     sqlite3_stmt* stmt = prapare_statement(sql_query);
@@ -188,7 +224,7 @@ namespace gazeta::storage::db::sqlite {
   }
 
   bool manager::set_info_source(const common::source& info_source) {
-    AUTOLOG
+    AUTOLOG_ST
     const char* sql_query =
         "INSERT INTO `source`(`name`, `url`, `source_type_id`, `filter`, `filter_startes_with`) VALUES (?,?,?,?,?)";
     sqlite3_stmt* stmt = prapare_statement(sql_query,
@@ -216,7 +252,7 @@ namespace gazeta::storage::db::sqlite {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
       common::article article;
       article.id = sqlite3_column_int64(stmt, 0);
-      article.datetime = sqlite3_column_int(stmt, 1);
+      article.set_datetime((char*)sqlite3_column_text(stmt, 1));
       article.text = (char*)sqlite3_column_text(stmt, 2);
       article.source_id = sqlite3_column_int64(stmt, 3);
       article.link = (char*)sqlite3_column_text(stmt, 4);
@@ -249,45 +285,92 @@ namespace gazeta::storage::db::sqlite {
     return articles;
   }
 
-  bool manager::get_article(common::article& article){AUTOLOG}
+  bool manager::get_article(common::article& article) {
+    AUTOLOG_ST
+    const char* sql_query;
+    sqlite3_stmt* stmt;
+    if (article.id > 0 && article.source_id > 0) {
+      sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                  "`images_attached` FROM `articles` WHERE `id` = ? AND `source_id` = ?";
+      stmt = prapare_statement(sql_query, article.id, article.source_id);
+    } else if (article.id > 0) {
+      sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                  "`images_attached` FROM `articles` WHERE `id` =?";
+      stmt = prapare_statement(sql_query, article.id);
+    } else if (!article.link.empty()) {
+      sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                  "`images_attached` FROM `articles` WHERE `link` =?";
+      stmt = prapare_statement(sql_query, article.link);
+    }
 
-  std::optional<std::vector<common::article>> manager::get_articles() {
-    AUTOLOG
-    const char* sql_query = "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached` FROM `articles`";
-    sqlite3_stmt* stmt = prapare_statement(sql_query);
+    auto articles_lst = get_article_data(sql_query, stmt);
+    if (!articles_lst.has_value()) {
+      return false;
+    }
 
-    return get_article_data(sql_query, stmt);
+    if (articles_lst.value().size() > 1) {
+      log()->warning("Multiple articles found for id, source_id and link: {}, {}, '{}'. Getting front.",
+                     article.id,
+                     article.source_id,
+                     article.link);
+    }
+
+    article.id = articles_lst->front().id;
+    article.datetime_occurred = articles_lst->front().datetime_occurred;
+    article.text = articles_lst->front().text;
+    article.source_id = articles_lst->front().source_id;
+    article.link = articles_lst->front().link;
+    article.reply_to_id = articles_lst->front().reply_to_id;
+    article.images_attached = articles_lst->front().images_attached;
+    article.images = articles_lst->front().images;
+
+    return true;
+  }
+
+  std::optional<std::vector<common::article>> manager::get_articles(size_t limit) {
+    AUTOLOG_ST
+    std::string sql_query =
+        fmt::format("SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                    "`images_attached` FROM `articles` ORDER BY `datetime_occurrence` DESC LIMIT {};",
+                    limit);
+    sqlite3_stmt* stmt = prapare_statement(sql_query.c_str());
+
+    return get_article_data(sql_query.c_str(), stmt);
   }
 
   std::optional<std::vector<common::article>> manager::get_articles(int timestamp_begin) {
-    AUTOLOG
-    const char* sql_query = "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached` FROM `articles` WHERE `datetime` > ?";
+    AUTOLOG_ST
+    const char* sql_query =
+        "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+        "`images_attached` FROM `articles` WHERE `datetime_occurrence` > ? ORDER BY `datetime_occurrence` DESC";
     sqlite3_stmt* stmt = prapare_statement(sql_query, timestamp_begin);
     return get_article_data(sql_query, stmt);
   }
 
   std::optional<std::vector<common::article>> manager::get_articles(int timestamp_begin, int timestamp_end) {
-    AUTOLOG
-    const char* sql_query = "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached` FROM `articles` WHERE `datetime` > ? AND `datetime` <?";
+    AUTOLOG_ST
+    const char* sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                            "`images_attached` FROM `articles` WHERE `datetime_occurrence` > ? AND "
+                            "`datetime_occurrence` <? ORDER BY `datetime_occurrence` DESC";
     sqlite3_stmt* stmt = prapare_statement(sql_query, timestamp_begin, timestamp_end);
     return get_article_data(sql_query, stmt);
   }
 
-  std::optional<std::vector<common::article>> manager::get_articles_by_source(int source_id) {
-    AUTOLOG
-    const char* sql_query = "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached` FROM `articles` WHERE `source_id` = ?";
-    sqlite3_stmt* stmt = prapare_statement(sql_query, source_id);
-    return get_article_data(sql_query, stmt);
+  std::optional<std::vector<common::article>> manager::get_articles_by_source(int source_id, size_t limit) {
+    AUTOLOG_ST
+    std::string sql_query = fmt::format(
+        "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+        "`images_attached` FROM `articles` WHERE `source_id` = ? ORDER BY `datetime_occurrence` DESC LIMIT {}",
+        limit);
+    sqlite3_stmt* stmt = prapare_statement(sql_query.c_str(), source_id);
+    return get_article_data(sql_query.c_str(), stmt);
   }
 
   std::optional<std::vector<common::article>> manager::get_articles_by_source(int source_id, int timestamp_begin) {
-    AUTOLOG
-    const char* sql_query = "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached` FROM `articles` WHERE `source_id` = ? AND `datetime` > ?";
+    AUTOLOG_ST
+    const char* sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                            "`images_attached` FROM `articles` WHERE `source_id` = ? AND `datetime_occurrence` > ? "
+                            "ORDER BY `datetime_occurrence` DESC";
     sqlite3_stmt* stmt = prapare_statement(sql_query, source_id, timestamp_begin);
     return get_article_data(sql_query, stmt);
   }
@@ -296,19 +379,27 @@ namespace gazeta::storage::db::sqlite {
                                                                               int timestamp_begin,
                                                                               int timestamp_end) {
 
-    AUTOLOG
-    const char* sql_query =
-        "SELECT `id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-        "`images_attached` FROM `articles` WHERE `source_id` = ? AND `datetime` > ? AND `datetime` <?";
+    AUTOLOG_ST
+    const char* sql_query = "SELECT `id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+                            "`images_attached` FROM `articles` WHERE `source_id` = ? AND `datetime_occurrence` > ? AND "
+                            "`datetime_occurrence` <? ORDER BY `datetime_occurrence` DESC";
     sqlite3_stmt* stmt = prapare_statement(sql_query, source_id, timestamp_begin, timestamp_end);
     return get_article_data(sql_query, stmt);
   }
 
   bool manager::set_article(const common::article& article) {
-    AUTOLOG
-    const char* sql_query = "INSERT INTO `articles`(`id`, `datetime`, `text`, `source_id`, `link`, `reply_to_id`, "
-                            "`images_attached`) VALUES (?,?,?,?,?,?,?)";
-    sqlite3_stmt* stmt = prapare_statement(sql_query);
+    AUTOLOG_ST
+    const char* sql_query =
+        "INSERT INTO `articles`(`id`, `datetime_occurrence`, `text`, `source_id`, `link`, `reply_to_id`, "
+        "`images_attached`) VALUES (?,?,?,?,?,?,?)";
+    sqlite3_stmt* stmt = prapare_statement(sql_query,
+                                           article.id,
+                                           article.get_datetime(),
+                                           article.text,
+                                           1, // article.source_id,
+                                           article.link,
+                                           article.reply_to_id,
+                                           article.images_attached);
     if (!stmt || !execute_query(sql_query)) {
       sqlite3_finalize(stmt);
       return false;
@@ -332,7 +423,7 @@ namespace gazeta::storage::db::sqlite {
   }
 
   bool manager::set_articles(const std::vector<common::article>& articles) {
-    AUTOLOG
+    AUTOLOG_ST
     for (const auto& article: articles) {
       set_article(article);
     }

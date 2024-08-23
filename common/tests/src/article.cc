@@ -24,7 +24,7 @@ protected:
     // Set up some sample data
     a.id = 123;
     a.link = "https://example.com";
-    a.datetime = "2022-01-01 12:00:00";
+    a.set_datetime("2022-01-01 12:00:00");
     a.time = "afternoon";
     a.text = "This is my text";
 
@@ -43,7 +43,7 @@ protected:
 
     // Set up some sample data
     a.link = "https://example.com";
-    a.datetime = "2022-01-01 12:00:00";
+    a.set_datetime("2022-01-01 12:00:00");
     a.time = "afternoon";
     a.text = "This is my text";
 
@@ -61,7 +61,7 @@ protected:
 
     // Set up some sample data
     a.id = 123;
-    a.datetime = "2022-01-01 12:00:00";
+    a.set_datetime("2022-01-01 12:00:00");
     a.time = "afternoon";
     a.text = "This is my text";
 
@@ -80,7 +80,7 @@ protected:
     // Set up some sample data
     a.id = 123;
     a.link = "https://example.com";
-    a.datetime = "2022-01-01 12:00:00";
+    a.set_datetime("2022-01-01 12:00:00");
     a.time = "afternoon";
     a.text = "This is my text";
 
@@ -99,7 +99,7 @@ protected:
     // Set up some sample data
     a.id = 123;
     a.link = "https://example.com";
-    a.datetime = "2022-01-01 12:00:00";
+    a.set_datetime("2022-01-01 12:00:00");
     a.time = "afternoon";
     a.text = "This is my text";
 

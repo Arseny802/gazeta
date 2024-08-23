@@ -1,14 +1,12 @@
-#include "hare/config_custom.h"
 #include "pch.h"
+#include "hare/config_custom.h"
+#include "storage/hare_storage.h"
 
-namespace gazeta::info_controller
-{
-  namespace
-  {
+namespace gazeta::info_controller {
+  namespace {
     std::string common_logger_name;
 
-    void initialize_logging_client()
-    {
+    void initialize_logging_client() {
       auto config = std::make_unique<hare::config_custom>();
 
       config->set_project_name(GAZETA_IC_PROJECT_NAME);
@@ -25,7 +23,12 @@ namespace gazeta::info_controller
     }
   } // namespace
 
-  void initialize_logging() { initialize_logging_client(); }
+  void initialize_logging() {
+    initialize_logging_client();
+    storage::initialize_logging();
+  }
 
-  hare::hlogger_ptr log() { return hare::get_logger(common_logger_name); }
+  hare::hlogger_ptr log() {
+    return hare::get_logger(common_logger_name);
+  }
 } // namespace gazeta::info_controller

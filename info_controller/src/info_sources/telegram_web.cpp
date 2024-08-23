@@ -30,7 +30,7 @@ namespace gazeta::info_controller::info_sources {
         std::string(reinterpret_cast<char*>(xmlGetProp(element_message_time, (xmlChar*)"datetime")));
 
     new_article.time = message_time;
-    new_article.datetime = message_time2;
+    new_article.set_datetime(message_time2);
     return true;
   }
 

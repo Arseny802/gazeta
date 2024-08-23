@@ -26,6 +26,7 @@ target_precompile_headers(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     gazeta.common
+    gazeta.storage
     LibXml2::LibXml2
     fmt::fmt
     openssl::openssl

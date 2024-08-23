@@ -8,15 +8,13 @@ CREATE TABLE IF NOT EXISTS `settings` (
 
 CREATE TABLE IF NOT EXISTS `migrations` (
   `name` VARCHAR(255) PRIMARY KEY,
-  `datetime_processed` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  `datetime_processed` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `source_types` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL UNIQUE
 );
-
-INSERT OR REPLACE INTO `source_types` (`name`) VALUES ('telegram_web');
 
 CREATE TABLE IF NOT EXISTS `source` (
   `id` INTEGER PRIMARY KEY,
@@ -28,9 +26,12 @@ CREATE TABLE IF NOT EXISTS `source` (
   FOREIGN KEY(source_type_id) REFERENCES source_types(id)
 );
 
+INSERT OR REPLACE INTO `source_types` (`id`, `name`) VALUES (1, 'telegram_web');
+INSERT OR REPLACE INTO `source` (`id`, `name`, `url`, `source_type_id`) VALUES (1, 'RIA', 'rian_ru', 1);
+
 CREATE TABLE IF NOT EXISTS `articles` (
   `id` INTEGER NOT NULL,
-  `datetime` TIMESTAMP NOT NULL,
+  `datetime_occurrence` DATETIME NOT NULL,
   `text` TEXT NOT NULL,
   `source_id` INTEGER NOT NULL,
   `link` VARCHAR(255) NOT NULL,
