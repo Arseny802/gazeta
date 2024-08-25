@@ -33,6 +33,7 @@
 
 .idea
 .vscode
+.VSCodeCounter
 bin
 cmake_build
 CMakeLists.txt.user
