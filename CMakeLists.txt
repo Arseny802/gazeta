@@ -53,6 +53,8 @@ add_subdirectory(storage)
 add_subdirectory(gui/gtk)
 add_subdirectory(gui/qt)
 
+enable_testing()
+
 #if (EXISTS "${CMAKE_BINARY_DIR}/debug_win_gcc_x64")
 #    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 #        COMMAND ${CMAKE_COMMAND} -E make_directory

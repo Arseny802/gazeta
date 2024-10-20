@@ -38,8 +38,10 @@ namespace gazeta::common {
   }
 
   void article::set_datetime(const std::string& datetime) {
-    //"2024-08-23T15:54:39+00:00"
+    // "2024-08-23T15:54:39+00:00"
+    // "2022-01-01 12:00:00"
     std::string format{"%Y-%m-%dT%H:%M:%S"};
+    std::string format2{"%Y-%m-%d%H:%M:%S"};
 
     tm tmStruct = {};
     std::istringstream ss(datetime);

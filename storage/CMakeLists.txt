@@ -25,7 +25,8 @@ target_precompile_headers(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PUBLIC
   gazeta.common
   ${PROJECT_NAME}.resources
-  SQLite::SQLite3)
+  SQLite::SQLite3
+)
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
@@ -37,7 +38,7 @@ target_include_directories(${PROJECT_NAME}
 
 set(STORAGE_RESOURCE_FILES
   sql/create_db.sql)
-  
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CMAKE_CXX_STANDARD 20
   #RESOURCE "${STORAGE_RESOURCE_FILES}"
